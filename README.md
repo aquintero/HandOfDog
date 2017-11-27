@@ -1,0 +1,2 @@
+# HandOfDog
+AlphaGo Zero experimentation

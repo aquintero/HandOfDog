@@ -31,8 +31,8 @@ class TestGoBoard(unittest.TestCase):
 
         white_player.play = white_play
 
-        go_game = GoGame(black_player, white_player, board_size=9, komi=4.5)
-        color, b, w = go_game.play_game()
+        go_game = GoGame(board_size=9, komi=4.5)
+        color, b, w = go_game.play_game(black_player, white_player)
         self.assertEqual(38, b)
         self.assertEqual(47.5, w)
 
@@ -53,6 +53,6 @@ class TestGoBoard(unittest.TestCase):
             return move[0] + move[1] * len(history[0])
 
         white_player.play = white_play
-        go_game = GoGame(black_player, white_player, board_size=9, komi=4.5)
+        go_game = GoGame(board_size=9, komi=4.5)
         with self.assertRaisesRegex(Exception, 'not a legal move'):
-            go_game.play_game()
+            go_game.play_game(black_player, white_player)

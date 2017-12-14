@@ -1,64 +1,5 @@
 import numpy as np
-from enum import Enum
-
-
-class Color(Enum):
-    black = -1
-    empty = 0
-    white = 1
-
-
-class Direction(Enum):
-    up = (0, -1)
-    down = (0, 1)
-    left = (-1, 0)
-    right = (1, 0)
-
-
-class GoGame:
-    def __init__(self, player_black, player_white, board_size=19, komi=6.5):
-        self.board_size = board_size
-        self.board = GoBoard(board_size)
-        self.players = (player_black, player_white)
-        self.colors = (Color.black, Color.white)
-        self.komi = komi
-        self.history = [self.board]
-
-    def reset(self):
-        self.board = GoBoard(self.board_size)
-        self.history = [self.board]
-
-    def play_game(self):
-        n_moves = self.board.size * self.board.size * 2
-        for t in range(n_moves):
-            player = self.players[t % 2]
-            color = self.colors[t % 2]
-            mask = self.legal_moves(color)
-            move = player.play(self.history, mask, color)
-
-    def legal_moves(self, color):
-        board_size = self.board_size
-        mask = np.full((board_size, board_size), False, dtype=bool)
-        temp_board = GoBoard(go_board=self.board)
-        for i in range(board_size):
-            for j in range(board_size):
-                if not self.board.is_empty(i, j):
-                    continue
-                temp_board.play(color, i, j)
-                for direction in Direction:
-                    ni = i + direction[0]
-                    nj = j + direction[1]
-                    if not temp_board.is_in_bounds(ni, nj):
-                        continue
-                    if temp_board.is_color(-color, ni, nj):
-                        temp_board.clear(ni, nj)
-                if temp_board.reach_empty(i, j):
-                    mask[i, j] = True
-                    for board in self.history:
-                        if temp_board == board:
-                            mask[i, j] = False
-                            break
-        return mask
+from ai.go.go_types import Color, Direction
 
 
 class GoBoard:
@@ -67,17 +8,17 @@ class GoBoard:
         if go_board is None:
             board = np.full((board_size, board_size), Color.empty, dtype=int)
         else:
-            board_size = board.board_size
-            board = np.array(board.board)
+            board_size = go_board.board_size
+            board = np.array(go_board.board)
         self.board_size = board_size
         self.board = board
 
     def reset(self):
         self.board = np.full((self.board_size, self.board_size), Color.empty, dtype=int)
 
-    def reach_empty(self, i, j, visited=None):
+    def reach_color(self, color, i, j, visited=None):
         self.assert_in_bounds(i, j)
-        color = self.board[i, j]
+        start_color = self.board[i, j]
         if visited is None:
             visited = np.full((self.board_size, self.board_size), False, dtype=bool)
         visited[i, j] = True
@@ -86,19 +27,38 @@ class GoBoard:
             nj = j + direction[1]
             if not self.is_in_bounds(ni, nj) or visited[ni, nj]:
                 continue
-            if self.board[ni, nj] == Color.empty:
-                return True
             if self.board[ni, nj] == color:
-                if self.reach_empty(ni, nj, visited):
-                    return True
-            return False
+                return True
+            if self.board[ni, nj] == start_color and self.reach_color(color, ni, nj, visited):
+                return True
+        return False
 
     def clear(self, i, j):
         self.assert_in_bounds(i, j)
         color = self.board[i, j]
-        if color == Color.empty or self.reach_empty(i, j):
+        if color == Color.empty or self.reach_color(Color.empty, i, j):
             return False
         self._clear_recursive(i, j)
+        return True
+
+    def score(self):
+        w = 0
+        b = 0
+        for i in range(self.board_size):
+            for j in range(self.board_size):
+                color = self.board[i, j]
+                if color == Color.white:
+                    w += 1
+                elif color == Color.black:
+                    b += 1
+                else:
+                    reach_black = self.reach_color(Color.black, i, j)
+                    reach_white = self.reach_color(Color.white, i, j)
+                    if reach_black and not reach_white:
+                        b += 1
+                    elif reach_white and not reach_black:
+                        w += 1
+        return b, w
 
     def _clear_recursive(self, i, j):
         self.assert_in_bounds(i, j)
@@ -114,10 +74,10 @@ class GoBoard:
             self._clear_recursive(ni, nj)
 
     def __eq__(self, other):
-        return np.equals(self.board, other.board)
+        return np.equal(self.board, other.board)
 
     def __ne__(self, other):
-        return not  np.equals(self.board, other.board)
+        return not np.equal(self.board, other.board)
 
     def play(self, color, i, j):
         self.assert_in_bounds(i, j)
@@ -128,6 +88,10 @@ class GoBoard:
         self.assert_in_bounds(i, j)
         self.assert_not_empty(i, j)
         self.board[i, j] = Color.empty
+
+    def get(self, i, j):
+        self.assert_in_bounds(i, j)
+        return self.board[i, j]
 
     def assert_in_bounds(self, i, j):
         if not self.is_in_bounds(i, j):

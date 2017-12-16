@@ -69,7 +69,7 @@ class GoGame:
                         temp_board.clear(ni, nj)
                 if temp_board.reach_color(Color.empty, i, j):
                     mask[i, j] = True
-                    for board in self.board_history:
+                    for board in self.board_history[max(0, len(self.board_history) - 6):]:
                         if np.equal(temp_board.board, board).all():
                             mask[i, j] = False
                             break

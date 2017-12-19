@@ -1,11 +1,11 @@
 from enum import IntEnum, Enum
+from ai.go.core import go_core as core
 
 
 class Color(IntEnum):
-    black = -1
-    empty = 0
-    white = 1
-
+    black = core.BLACK
+    empty = core.EMPTY
+    white = core.WHITE
 
 class Direction(tuple, Enum):
     left = (0, -1)

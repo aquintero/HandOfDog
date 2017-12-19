@@ -6,7 +6,7 @@ class RandomPlayer(GoPlayer):
     def __init__(self):
         pass
 
-    def play(self, color, history, mask):
+    def play(self, color, history, current_move, mask):
         size = history[0].shape[0]
         policy = np.random.uniform(size=(size, size))
         policy = np.minimum(policy, mask)

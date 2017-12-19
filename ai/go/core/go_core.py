@@ -100,94 +100,32 @@ def _swig_setattr_nondynamic_method(set):
     return set_attr
 
 
-EMPTY = _go_core.EMPTY
 BLACK = _go_core.BLACK
+EMPTY = _go_core.EMPTY
 WHITE = _go_core.WHITE
-class GoBoard(object):
-    thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
-    __repr__ = _swig_repr
-    size = _swig_property(_go_core.GoBoard_size_get, _go_core.GoBoard_size_set)
-    board = _swig_property(_go_core.GoBoard_board_get, _go_core.GoBoard_board_set)
 
-    def __init__(self):
-        _go_core.GoBoard_swiginit(self, _go_core.new_GoBoard())
-    __swig_destroy__ = _go_core.delete_GoBoard
-GoBoard_swigregister = _go_core.GoBoard_swigregister
-GoBoard_swigregister(GoBoard)
-
-
-def position_to_index(size: 'int', i: 'int', j: 'int') -> "int":
-    return _go_core.position_to_index(size, i, j)
-position_to_index = _go_core.position_to_index
-
-def init_board(go_board: 'GoBoard', size: 'int') -> "int":
-    return _go_core.init_board(go_board, size)
-init_board = _go_core.init_board
-
-def copy_board(arg1: 'GoBoard', to: 'GoBoard') -> "int":
-    return _go_core.copy_board(arg1, to)
-copy_board = _go_core.copy_board
-
-def destroy_board(go_board: 'GoBoard') -> "int":
-    return _go_core.destroy_board(go_board)
-destroy_board = _go_core.destroy_board
-
-def board_equals(b1: 'GoBoard', b2: 'GoBoard') -> "bool":
-    return _go_core.board_equals(b1, b2)
-board_equals = _go_core.board_equals
-
-def reset_board(go_board: 'GoBoard') -> "int":
-    return _go_core.reset_board(go_board)
-reset_board = _go_core.reset_board
-
-def reach_color(go_board: 'GoBoard', color: 'int', i: 'int', j: 'int', ret: 'bool *') -> "int":
-    return _go_core.reach_color(go_board, color, i, j, ret)
-reach_color = _go_core.reach_color
-
-def is_in_bounds(go_board: 'GoBoard', i: 'int', j: 'int') -> "bool":
-    return _go_core.is_in_bounds(go_board, i, j)
+def is_in_bounds(size: 'int', i: 'int', j: 'int') -> "bool":
+    return _go_core.is_in_bounds(size, i, j)
 is_in_bounds = _go_core.is_in_bounds
 
-def _reach_color_recursive(go_board: 'GoBoard', color: 'int', i: 'int', j: 'int', visited: 'bool *') -> "bool":
-    return _go_core._reach_color_recursive(go_board, color, i, j, visited)
-_reach_color_recursive = _go_core._reach_color_recursive
+def reach_color(board: 'int *', color: 'int', i: 'int', j: 'int') -> "bool":
+    return _go_core.reach_color(board, color, i, j)
+reach_color = _go_core.reach_color
 
-def clear(go_board: 'GoBoard', i: 'int', j: 'int') -> "int":
-    return _go_core.clear(go_board, i, j)
+def clear(board: 'int *', i: 'int', j: 'int') -> "bool":
+    return _go_core.clear(board, i, j)
 clear = _go_core.clear
 
-def _clear_recursive(go_board: 'GoBoard', i: 'int', j: 'int') -> "int":
-    return _go_core._clear_recursive(go_board, i, j)
-_clear_recursive = _go_core._clear_recursive
-class GoGame(object):
-    thisown = _swig_property(lambda x: x.this.own(), lambda x, v: x.this.own(v), doc='The membership flag')
-    __repr__ = _swig_repr
-    boards = _swig_property(_go_core.GoGame_boards_get, _go_core.GoGame_boards_set)
-    moves = _swig_property(_go_core.GoGame_moves_get, _go_core.GoGame_moves_set)
-    legal_moves = _swig_property(_go_core.GoGame_legal_moves_get, _go_core.GoGame_legal_moves_set)
-    board_size = _swig_property(_go_core.GoGame_board_size_get, _go_core.GoGame_board_size_set)
-    n_moves = _swig_property(_go_core.GoGame_n_moves_get, _go_core.GoGame_n_moves_set)
-    max_moves = _swig_property(_go_core.GoGame_max_moves_get, _go_core.GoGame_max_moves_set)
+def score(board: 'int *') -> "int [2]":
+    return _go_core.score(board)
+score = _go_core.score
 
-    def __init__(self):
-        _go_core.GoGame_swiginit(self, _go_core.new_GoGame())
-    __swig_destroy__ = _go_core.delete_GoGame
-GoGame_swigregister = _go_core.GoGame_swigregister
-GoGame_swigregister(GoGame)
-cvar = _go_core.cvar
-directions = cvar.directions
+def play_stone(board: 'int *', color: 'int', i: 'int', j: 'int') -> "bool":
+    return _go_core.play_stone(board, color, i, j)
+play_stone = _go_core.play_stone
 
-
-def init_game(go_game: 'GoGame', max_moves: 'int', board_size: 'int') -> "int":
-    return _go_core.init_game(go_game, max_moves, board_size)
-init_game = _go_core.init_game
-
-def destroy_game(go_game: 'GoGame') -> "int":
-    return _go_core.destroy_game(go_game)
-destroy_game = _go_core.destroy_game
-
-def play_move(go_game: 'GoGame', color: 'int', i: 'int', j: 'int') -> "int":
-    return _go_core.play_move(go_game, color, i, j)
-play_move = _go_core.play_move
+def legal_moves(board: 'int *', board_history: 'int *', color: 'int', legal_moves: 'int *') -> "void":
+    return _go_core.legal_moves(board, board_history, color, legal_moves)
+legal_moves = _go_core.legal_moves
 
 

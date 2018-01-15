@@ -10,7 +10,6 @@ class GoGame:
         self.komi = komi
         self.colors = [core.BLACK, core.WHITE]
         self.moves = []
-        self.current_move = 0
 
     def reset(self):
         self.history = np.full((self.max_moves + 1, self.board_size, self.board_size), core.EMPTY)
@@ -22,6 +21,7 @@ class GoGame:
         for t in range(self.max_moves):
             if n_pass == 2:
                 break
+            np.copyto(self.history[t + 1], self.history[t])
             player = players[t % 2]
             color = self.colors[t % 2]
             mask = np.ones((self.board_size, self.board_size), dtype=int)
@@ -37,14 +37,24 @@ class GoGame:
             i = int(move % self.board_size)
             j = int(move // self.board_size)
             if not mask[i, j]:
+                self.to_sgf('test.sgf')
+                print(i, j)
+                print(self.history[t])
+                print(self.history[t + 1])
+                print(player.search.tree.root.state.board)
                 raise Exception(f"move {i} {j} is not a legal move.")
-            np.copyto(self.history[t + 1], self.history[t])
             core.play_stone(self.history[t + 1], color, i, j)
-            self.current_move = t + 1
-        return self.score()
 
-    def score(self):
-        score = core.score(self.history[self.current_move])
+            if not np.equal(self.history[t + 1], player.search.tree.root.state.board).all():
+                print(i, j)
+                print(self.history[t])
+                print(self.history[t + 1])
+                print(player.search.tree.root.state.board)
+        self.to_sgf('test.sgf')
+        return self.score(self.history[t])
+
+    def score(self, board):
+        score = core.score(board)
         b = score[0]
         w = score[1]
         w += self.komi
@@ -55,14 +65,14 @@ class GoGame:
 
     def to_sgf(self, file_path):
         sgf = []
-        color, b, w = self.score()
+        color, b, w = self.score(self.history[len(self.moves)])
         winner = 'B' if color == core.BLACK else 'W'
         difference = abs(b - w)
         sgf.append(f'(;GM[1]FF[4]CA[UTF-8]SZ[{self.board_size}]KM[{self.komi}]PB[Black]PW[White]RE[{winner}+{difference}]')
         for t, move in enumerate(self.moves):
             player = 'W' if t % 2 else 'B'
             if move == self.board_size * self.board_size:
-                sgf.append(f'{player}[]')
+                sgf.append(f';{player}[]')
                 continue
             i = chr(ord('a') + (move % self.board_size))
             j = chr(ord('a') + (move // self.board_size))

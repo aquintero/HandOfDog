@@ -25,7 +25,6 @@ bool reach_color(int* board, int size, int size2, int color, int i, int j) {
 		for(int vj = 0; vj < size; vj++)
 			visited[_2D(size, vi, vj)] = false;
 
-	int start_color = board[_2D(size, i, j)];
 	bool ret = _reach_color_recursive(board, size, color, i, j, visited);
 
 	free(visited);
@@ -106,8 +105,6 @@ bool play_stone(int* board, int size, int size2, int color, int i, int j) {
 	if (!is_in_bounds(size, i, j) || board[_2D(size, i, j)] != EMPTY)
 		return false;
 	board[_2D(size, i, j)] = color;
-	if (reach_color(board, size, size, EMPTY, i, j))
-		return true;
 	for (int di = 0; di < 4; di++) {
 		const int* dir = directions[di];
 		int ni = i + dir[0];
@@ -119,6 +116,7 @@ bool play_stone(int* board, int size, int size2, int color, int i, int j) {
 	}
 	if (reach_color(board, size, size, EMPTY, i, j))
 		return true;
+	clear(board, size, size, i, j);
 	return false;
 }
 

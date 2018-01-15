@@ -127,6 +127,16 @@ class TestGoBoard(unittest.TestCase):
         core.legal_moves(np.full((9, 9), core.EMPTY), np.full((6, 9, 9), core.EMPTY), core.BLACK, legal_moves)
         self.assertEqual(True, np.equal(legal_moves, np.ones((9, 9), dtype=int)).all())
 
+    def test_play_stone2(self):
+        board = np.zeros((19, 19), dtype=int)
+        core.play_stone(board, -1, 0, 0)
+        core.play_stone(board, 1, 1, 0)
+        core.play_stone(board, 1, 0, 1)
+        self.assertEqual(0, board[0][0])
+        core.play_stone(board, -1, 0, 18)
+        core.play_stone(board, 1, 1, 18)
+        core.play_stone(board, 1, 0, 17)
+        self.assertEqual(0, board[0][18])
 
 def play_game(board, moves):
     t = 0

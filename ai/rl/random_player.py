@@ -3,10 +3,7 @@ from ai.go.go_player import GoPlayer
 
 
 class RandomPlayer(GoPlayer):
-    def __init__(self):
-        pass
-
-    def play(self, color, history, current_move, mask):
+    def play(self, color, history, move_history, current_move, mask):
         size = history[0].shape[0]
         policy = np.random.uniform(size=(size, size))
         policy = np.minimum(policy, mask)
